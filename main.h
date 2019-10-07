@@ -1,3 +1,6 @@
+#ifndef _MAIN_
+
+#define _MAIN_
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -34,34 +37,7 @@ Station listeStations[10];
 Bus listeBus[16];
 
 
-void initialisePartie();
-void initialiseTour();
-void initialiseJoueurs();
-void initialiseStations();
-void initialiseBus();
-void initialiseVoyageurs();
-void ajouteNouveauxVoyageurs();
-void faisMonterVoyageurs();
-void faisDecendreVoyageurs();
+void joue();
 
 
-/************************************
- * Liste chainée de Voyageurs
-*************************************/
-typedef struct VoyageurListeVoyageur VoyageurListeVoyageur;
-
-struct VoyageurListeVoyageur{
-    Voyageur * voyageur;
-    VoyageurListeVoyageur * suivant;
-};
-
-typedef struct{
-    VoyageurListeVoyageur * premier;
-}ListeVoyageurs;
-
-ListeVoyageurs listeVoyageurs;
-
-void initialiseListeVoyageur();
-void ajouteVoyageur(Voyageur * v);
-void supprimeVoyageur(int idVoyageur);
-Voyageur * getVoyageur(int idVoyageur);
+#endif
