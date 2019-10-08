@@ -20,7 +20,9 @@ int main()
     return 0;
 }
 
-void joue(){}
+void joue(){
+    printf("PASS\n");
+}
 
 
 

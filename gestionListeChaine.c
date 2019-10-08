@@ -71,30 +71,24 @@ void supprimeVoyageur(int idVoyageur){
 
 //retourne une structure voyageur contenant l'id idVoyageur
 Voyageur * getVoyageur(int idVoyageur){
-    fprintf(stderr, "Début fonction getVoyageurs\n");
     VoyageurListeVoyageur * actuel = listeVoyageurs.premier;
     int trouver = 0; //si on a trouver le bon voyageur
     Voyageur * v=NULL;
 
     while(actuel != NULL && trouver == 0){
 
-        fprintf(stderr, "Actuel = %d   Attendu = %d\n",actuel->voyageur->idVoyageur, idVoyageur);
         if(actuel->voyageur->idVoyageur == idVoyageur){
-            fprintf(stderr, "Voyageur trouvé!\n");
             v = actuel->voyageur;
             trouver = 1;
         }
         else{
-            fprintf(stderr,"Voyageur NON trouvé\n");
             actuel = actuel->suivant;
             if(actuel==NULL){
-                fprintf(stderr, "Suivant est NULL\n");
             }
         }
         
         
     }
-    fprintf(stderr, "Fin fonction getVoyageurs\n");
     return v;
     
 }

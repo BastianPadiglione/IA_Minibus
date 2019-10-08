@@ -6,7 +6,7 @@ LDFLAGS=
 all:: $(EXEC) clean
 
 IA: main.o recuperationDeDonnees.o gestionListeChaine.o
-	gcc -o IA main.o recuperationDeDonnees.o gestionListeChaine.o $(LDFLAGS)
+	gcc -o ../Minibus/ligueIA/IA main.o recuperationDeDonnees.o gestionListeChaine.o $(LDFLAGS)
 
 main.o: main.c main.h
 	gcc -o main.o -c main.c $(CFLAGS)
