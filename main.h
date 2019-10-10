@@ -1,9 +1,18 @@
 #ifndef _MAIN_
 
 #define _MAIN_
+#define NB_JOUEURS_MAX 4
+#define NB_BUS_MAX_JOUEUR 4
+#define PRIX_BUS 100
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
+/*
+* Structures générales représentants les différents acteurs du jeu
+*/
 
 typedef struct{
     int idJoueur, argent, nbAmeliorationSB, nbAmeliorationSP, nbAmeliorationCT, etat;
@@ -23,7 +32,11 @@ typedef struct{
 }Bus;
 
 
-int idJoueur;
+/*
+*Variables globales du jeu
+*/
+
+int monIdJoueur;
 int nbJoueurs;
 int nbStations; 
 int nbBus;

@@ -4,7 +4,7 @@
 
 void  initialisePartie(){
     
-    scanf("%d %d", &nbJoueurs, &idJoueur);
+    scanf("%d %d", &nbJoueurs, &monIdJoueur);
     nbStations = 3;
     nbVoyageursActuel=0;
     initialiseListeVoyageur(); 
@@ -30,7 +30,7 @@ void initialiseJoueurs(){
     fprintf(stderr,"Nombre joueurs = %d\n", nbJoueurs);
     for(int i = 0; i<nbJoueurs; i++){
         scanf("%d %d %d %d %d %d", &listeJoueurs[i].idJoueur, &listeJoueurs[i].argent, &listeJoueurs[i].nbAmeliorationSB, &listeJoueurs[i].nbAmeliorationSP, &listeJoueurs[i].nbAmeliorationCT, &listeJoueurs[i].etat);
-       
+        
         fprintf(stderr,"%d %d %d %d %d %d\n", listeJoueurs[i].idJoueur, listeJoueurs[i].argent, listeJoueurs[i].nbAmeliorationSB, listeJoueurs[i].nbAmeliorationSP, listeJoueurs[i].nbAmeliorationCT, listeJoueurs[i].etat);
     }
     fprintf(stderr,"Fin liste joueurs\n");
