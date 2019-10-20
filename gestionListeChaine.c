@@ -2,7 +2,9 @@
 /************************************
  * Liste chainée de Voyageurs
 *************************************/
+#include "main.h"
 #include "gestionListeChaine.h"
+
 
 void initialiseListeVoyageur(){
     listeVoyageurs.premier = NULL;
@@ -83,11 +85,9 @@ Voyageur * getVoyageur(int idVoyageur){
         }
         else{
             actuel = actuel->suivant;
-            if(actuel==NULL){
+            if(actuel==NULL){//c'est quoi ça?
             }
         }
-        
-        
     }
     return v;
     

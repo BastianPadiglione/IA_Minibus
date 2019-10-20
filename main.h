@@ -1,10 +1,12 @@
 #ifndef _MAIN_
 
+#define _MAIN_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
-#define _MAIN_
 
 //Valeurs générales
 #define NB_JOUEURS_MAX 4
@@ -22,9 +24,9 @@
 
 //Infos sur les amélioration (nottament les limitations)
 #define NB_BUS_MAX_JOUEUR 4
-#define TAILLE_BUS_MAX 3
-#define VITESSE_BUS_MAX 3
-#define NB_AUGM_TARIF_BUS_MAX 5
+#define NB_AUGM_SB_MAX 2
+#define NB_AUGM_SP_MAX 2
+#define NB_AUGM_CT_MAX 5
 #define VALEUR_AUGM_TARIF_BUS 2
 
 
@@ -69,6 +71,20 @@ Bus listeBus[NB_JOUEURS_MAX * NB_BUS_MAX_JOUEUR];
 
 
 void joue();
+
+
+
+
+
+//A DEFINIR
+int getNbBusJoueur(int idJoueur);
+int * getIdBusJoueur(int idJoueur);
+
+
+//Ajoute commandes
+void acheteBus(char * commandes);
+void ajusteDestinationBus(char * commandes);
+
 
 
 #endif

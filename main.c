@@ -1,7 +1,7 @@
 #include "main.h"
+#include "verifications.h"
 #include "recuperationDeDonnees.h"
-
-//TODO fonction fini tour qui free les différents malloc
+#include "gestionListeChaine.h"
 
 int main()
 {
@@ -18,11 +18,16 @@ int main()
         tour++;
     }while (listeJoueurs[monIdJoueur].etat == 0);
     
+    if(listeJoueurs[monIdJoueur].etat ==1 ){
+        fprintf(stderr,"VICTOIRE :) TOUR %d\n",tour);
+    }
+    else
+    {
+        fprintf(stderr,"DEFAITE :(\n");
+    }
+    
     return 0;
 }
-
-
-
 
 
 /**************************
@@ -30,22 +35,38 @@ int main()
 **************************/
 
 
-int getNbBusJoueur(int idJoueur);
-bool peutAcheterBus(int idJoueur);
-int * getIdBusJoueur(int idJoueur);
-bool peutAjouterVoiture(int idJoueur, int idBus);
+
+int getNbVoyageurBus(int idBus);
+void acheteAmeliorationSP(char * commande);
+
 
 void joue(){
 
-    for(int i = 0; i< nbJoueurs; i++){
-        for(int j = 0; j< nbBus; j++){
-            fprintf(stderr, "J%d B%d=%d\n", listeJoueurs[i].idJoueur, listeBus[j].idBus, peutAjouterVoiture(i,j));
-        }
+
+    char * commandes = (char*)malloc(256 * sizeof(char));
+    commandes[0] = '\0';
+
+    if(peutAcheterBus(monIdJoueur)){
+        acheteBus(commandes);
     }
 
-    printf("PASS\n");
+    if(peutAcheterAmeliorationSP(monIdJoueur)){
+        fprintf(stderr,"Tente d'acheter SP");
+        acheteAmeliorationSP(commandes);
+    }
+
+    ajusteDestinationBus(commandes);
+
+    strcat(commandes, "PASS\n");
+    printf("%s",commandes);
+
+    free(commandes);
 }
 
+
+/*
+**A DEFINIR
+*/
 
 //Renvoie le nombre de bus possédés par un joueur d'ID idJoueur
 int getNbBusJoueur(int idJoueur){
@@ -56,6 +77,8 @@ int getNbBusJoueur(int idJoueur){
             nbBusJoueur++;
         }
     }
+    //fprintf(stderr, "J %d nbBus = %d\n",idJoueur, nbBusJoueur);
+
     return nbBusJoueur; 
 }
 
@@ -64,15 +87,17 @@ int getMonNbBus(){
 }
 
 
-//Utile ? il faudrait pouvoir free facilement la liste d'id fournie par la fonction ...
+//renvoie un pointeur sur un tableau contenant les IDs des bus d'un joueur idJoueur
+//Attention à bien free le pointeur lors de l'utilisation de la fonction
 int * getIdBusJoueur(int idJoueur){
-
-    int nbBus = getNbBusJoueur(idJoueur);
-    int * idBusJoueur = (int *)malloc(nbBus * sizeof(int));
+    int nbBusJoueur = getNbBusJoueur(idJoueur);
+    
+    int * idBusJoueur = (int *)malloc(nbBusJoueur * sizeof(int));
     int indiceRetour=0;
 
     for(int i = 0; i < nbBus; i++){
         if(listeBus[i].idJoueur == idJoueur){
+           // fprintf(stderr,"J = %d  B = %d\n",idJoueur,i);
             idBusJoueur[indiceRetour]=listeBus[i].idBus;
             indiceRetour++;
         }
@@ -84,23 +109,89 @@ int * getMesIdBus(){
     return getIdBusJoueur(monIdJoueur);
 }
 
-//Verifie si un joueur d'ID idJoueur peut acheter un nouveau bus
-bool peutAcheterBus(int idJoueur){
-    int nbBus = getNbBusJoueur(idJoueur);
 
-    return nbBus < NB_BUS_MAX_JOUEUR && listeJoueurs[idJoueur].argent >= PRIX_BUS;
+bool estVide(int idStation){
+    VoyageurListeVoyageur * actuel = listeVoyageurs.premier;
+    bool estVide = true;
+
+    //Mettre l'idBus d'un voygeur à -1 ou verifier que ça le soit par default au début
+    while(actuel != NULL && estVide){
+        if(actuel->voyageur->idBus == -1 
+        && actuel->voyageur->idStationDepart == idStation){
+            estVide = false;
+        }
+        actuel = actuel->suivant;
+    }
+    return estVide;
 }
 
-//Verifie si un joueur d'ID idJoueur peut acheter une voiture à un bus d'ID idBus
-bool peutAjouterVoiture(int idJoueur, int idBus){
 
-    if(idJoueur == listeBus[idBus].idJoueur //si le bus appartient bien au joueur
-    && listeBus[idBus].nbVoiture < listeBus[idBus].nbMaxVoiture //ET que le bus peut avoir d'autres voitures
-    && listeJoueurs[idJoueur].argent >= PRIX_VOITURE_BUS //ET que le joueur a l'argent nécessaire
-    ){
-        return true;
+int getNbVoyageurBus(int idBus){
+
+    VoyageurListeVoyageur * actuel = listeVoyageurs.premier;
+
+    int nb = 0;
+    
+    while(actuel != NULL){
+        if(actuel->voyageur->idBus == idBus){
+            nb++;
+        }
+        actuel = actuel->suivant;
     }
-    else {
-        return false;
+
+    return nb;
+}
+
+bool voyageurVeulentDescendre(int idBus, int idStation){
+
+    VoyageurListeVoyageur * actuel = listeVoyageurs.premier;
+    bool veutDesc = false;
+
+    while(actuel != NULL && !veutDesc){
+        if(actuel->voyageur->idBus == idBus 
+        && actuel->voyageur->idStationArrivee == idStation){
+            veutDesc = true;
+        }
+        actuel = actuel->suivant;
     }
+    return veutDesc;
+}
+
+
+
+
+/*
+**Ajoute commandes
+*/
+void acheteBus(char * commandes){
+    char * commandeBus = "BUS 0 ; ";
+    strcat(commandes, commandeBus);
+}
+
+//TOFIX parfois le bus reste bloquer à la meme station
+void ajusteDestinationBus(char * commandes){
+    int * mesIdBus = getMesIdBus();
+    Bus bus;
+    char * commandeDest = (char*)malloc(32*sizeof(char));
+
+    for(int i = 0; i < getMonNbBus(); i++){
+
+        bus = listeBus[mesIdBus[i]];
+    
+        if(bus.arrete){
+            fprintf(stderr,"bus %d\nvide = %d\nplein = %d\nvDesc = %d\n\n",bus.idBus ,estVide(bus.stationDeDirection), (getNbVoyageurBus(bus.idBus) == bus.nbVoiture * NB_VOYAGEUR_MAX_VOITURE), !voyageurVeulentDescendre(bus.idBus, bus.stationDeDirection));
+            if((estVide(bus.stationDeDirection)                                     //si le bus ne peut pas prendre de voyageur (station vide ou bus plein)
+                || getNbVoyageurBus(bus.idBus) == bus.nbVoiture * NB_VOYAGEUR_MAX_VOITURE)  //ET que personne ne veut descendre
+                && !voyageurVeulentDescendre(bus.idBus, bus.stationDeDirection)){
+               
+                sprintf(commandeDest, "DESTINATION %d %d ; ", bus.idBus, (bus.stationDeDirection+1)%nbStations);
+                strcat(commandes,commandeDest);
+            }
+        }
+    }
+    free(mesIdBus);
+}
+
+void acheteAmeliorationSP(char * commande){
+    strcat(commande, "UPDATESP ; ");
 }

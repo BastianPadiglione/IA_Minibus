@@ -5,7 +5,7 @@
 #ifndef _GESTION_LISTE_CHAINE_
 
 #define _GESTION_LISTE_CHAINE_
-#include "main.h"
+
 
 typedef struct VoyageurListeVoyageur VoyageurListeVoyageur;
 

@@ -65,12 +65,23 @@ void initialiseBus(){
         scanf("%d %d %d %d %d %d", &listeBus[i].idBus, &listeBus[i].idJoueur, &listeBus[i].x, &listeBus[i].y, &listeBus[i].stationDeDirection, &listeBus[i].nbVoiture);
         //fprintf(stderr,"%d %d %d %d %d %d\n", listeBus[i].idBus, listeBus[i].idJoueur, listeBus[i].x, listeBus[i].y, listeBus[i].stationDeDirection, listeBus[i].nbVoiture);
         
-        //parametres implicites basés sur les améiorations des joueurs
+        //parametres implicites basés sur les améliorations des joueurs
         //1 car 1 voiture à la base
         listeBus[i].nbMaxVoiture = 1 + listeJoueurs[listeBus[i].idJoueur].nbAmeliorationSB;
         //1 car vitesse de base = 1
         listeBus[i].vitesse = 1 + listeJoueurs[listeBus[i].idJoueur].nbAmeliorationSP;
         listeBus[i].tarif = TARIF_BUS_BASE + (VALEUR_AUGM_TARIF_BUS * listeJoueurs[listeBus[i].idJoueur].nbAmeliorationCT);
+        
+        //si le bus est à sa station de destination
+        if(listeBus[i].x == listeStations[listeBus[i].stationDeDirection].x
+            && listeBus[i].y == listeStations[listeBus[i].stationDeDirection].y){
+            
+             listeBus[i].arrete = true;
+        }
+        else{
+            listeBus[i].arrete = false;
+        }
+       
     }
     //fprintf(stderr,"Fin liste bus\n");
 }
