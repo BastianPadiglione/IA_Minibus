@@ -42,6 +42,7 @@ void acheteAmeliorationSP(char * commande);
 
 void joue(){
 
+    fprintf(stderr,"Nb Voyageurs = %d\n",nbVoyageursActuel);
 
     char * commandes = (char*)malloc(256 * sizeof(char));
     commandes[0] = '\0';
@@ -135,6 +136,7 @@ int getNbVoyageurBus(int idBus){
     while(actuel != NULL){
         if(actuel->voyageur->idBus == idBus){
             nb++;
+            fprintf(stderr,"VId = %d\n",actuel->voyageur->idVoyageur);
         }
         actuel = actuel->suivant;
     }
@@ -179,7 +181,8 @@ void ajusteDestinationBus(char * commandes){
         bus = listeBus[mesIdBus[i]];
     
         if(bus.arrete){
-            fprintf(stderr,"bus %d\nvide = %d\nplein = %d\nvDesc = %d\n\n",bus.idBus ,estVide(bus.stationDeDirection), (getNbVoyageurBus(bus.idBus) == bus.nbVoiture * NB_VOYAGEUR_MAX_VOITURE), !voyageurVeulentDescendre(bus.idBus, bus.stationDeDirection));
+            fprintf(stderr,"bus %d\nvide = %d\nnbV = %d  capMax = %d\nvDesc = %d\n\n",bus.idBus ,estVide(bus.stationDeDirection), getNbVoyageurBus(bus.idBus) , bus.nbVoiture * NB_VOYAGEUR_MAX_VOITURE, !voyageurVeulentDescendre(bus.idBus, bus.stationDeDirection));
+            
             if((estVide(bus.stationDeDirection)                                     //si le bus ne peut pas prendre de voyageur (station vide ou bus plein)
                 || getNbVoyageurBus(bus.idBus) == bus.nbVoiture * NB_VOYAGEUR_MAX_VOITURE)  //ET que personne ne veut descendre
                 && !voyageurVeulentDescendre(bus.idBus, bus.stationDeDirection)){

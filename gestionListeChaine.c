@@ -44,19 +44,17 @@ void supprimeVoyageur(int idVoyageur){
 
     VoyageurListeVoyageur * actuel = listeVoyageurs.premier;
     VoyageurListeVoyageur * aSupprimmer = NULL;
-    int trouver = 0; //si on a trouver le bon voyageur
-/*
+    bool trouver = false; //si on a trouver le bon voyageur
+
+    //On gere separement le cas ou le voyageur à supprimer est le premier de la liste
     if(actuel->voyageur->idVoyageur == idVoyageur){
-        trouver = 1;
+        trouver = true;
 
         aSupprimmer = actuel;
-        listeVoyageurs.premier->suivant = aSupprimmer->suivant;
+        actuel = aSupprimmer->suivant;
+    }
 
-        free(aSupprimmer->voyageur);
-            free(aSupprimmer);
-    }*/
-
-    while(actuel->suivant != NULL && trouver == 0){
+    while(actuel->suivant != NULL && !trouver){
 
         if(actuel->suivant->voyageur->idVoyageur == idVoyageur){
             trouver = 1;
@@ -64,10 +62,14 @@ void supprimeVoyageur(int idVoyageur){
             aSupprimmer = actuel->suivant;
             actuel->suivant = aSupprimmer->suivant;//on recupere le maillon suivant celui à supprimer pour garder la suite de la liste
             
-            free(aSupprimmer->voyageur);
-            free(aSupprimmer);
+            
         }
         actuel = actuel->suivant;
+    }
+
+    if(trouver){
+        free(aSupprimmer->voyageur);
+        free(aSupprimmer);
     }
 }
 
@@ -90,5 +92,4 @@ Voyageur * getVoyageur(int idVoyageur){
         }
     }
     return v;
-    
 }
