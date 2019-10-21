@@ -18,14 +18,6 @@ int main()
         tour++;
     }while (listeJoueurs[monIdJoueur].etat == 0);
     
-    if(listeJoueurs[monIdJoueur].etat ==1 ){
-        fprintf(stderr,"VICTOIRE :) TOUR %d\n",tour);
-    }
-    else
-    {
-        fprintf(stderr,"DEFAITE :(\n");
-    }
-    
     return 0;
 }
 
@@ -41,9 +33,7 @@ void acheteAmeliorationSP(char * commande);
 
 
 void joue(){
-
-    fprintf(stderr,"Nb Voyageurs = %d\n",nbVoyageursActuel);
-
+    
     char * commandes = (char*)malloc(256 * sizeof(char));
     commandes[0] = '\0';
 
@@ -52,7 +42,6 @@ void joue(){
     }
 
     if(peutAcheterAmeliorationSP(monIdJoueur)){
-        fprintf(stderr,"Tente d'acheter SP");
         acheteAmeliorationSP(commandes);
     }
 
@@ -65,9 +54,7 @@ void joue(){
 }
 
 
-/*
-**A DEFINIR
-*/
+
 
 //Renvoie le nombre de bus possédés par un joueur d'ID idJoueur
 int getNbBusJoueur(int idJoueur){
@@ -98,7 +85,7 @@ int * getIdBusJoueur(int idJoueur){
 
     for(int i = 0; i < nbBus; i++){
         if(listeBus[i].idJoueur == idJoueur){
-           // fprintf(stderr,"J = %d  B = %d\n",idJoueur,i);
+
             idBusJoueur[indiceRetour]=listeBus[i].idBus;
             indiceRetour++;
         }
@@ -136,7 +123,6 @@ int getNbVoyageurBus(int idBus){
     while(actuel != NULL){
         if(actuel->voyageur->idBus == idBus){
             nb++;
-            fprintf(stderr,"VId = %d\n",actuel->voyageur->idVoyageur);
         }
         actuel = actuel->suivant;
     }
@@ -181,7 +167,6 @@ void ajusteDestinationBus(char * commandes){
         bus = listeBus[mesIdBus[i]];
     
         if(bus.arrete){
-            fprintf(stderr,"bus %d\nvide = %d\nnbV = %d  capMax = %d\nvDesc = %d\n\n",bus.idBus ,estVide(bus.stationDeDirection), getNbVoyageurBus(bus.idBus) , bus.nbVoiture * NB_VOYAGEUR_MAX_VOITURE, !voyageurVeulentDescendre(bus.idBus, bus.stationDeDirection));
             
             if((estVide(bus.stationDeDirection)                                     //si le bus ne peut pas prendre de voyageur (station vide ou bus plein)
                 || getNbVoyageurBus(bus.idBus) == bus.nbVoiture * NB_VOYAGEUR_MAX_VOITURE)  //ET que personne ne veut descendre
@@ -193,6 +178,7 @@ void ajusteDestinationBus(char * commandes){
         }
     }
     free(mesIdBus);
+    free(commandeDest);
 }
 
 void acheteAmeliorationSP(char * commande){

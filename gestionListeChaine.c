@@ -10,33 +10,16 @@ void initialiseListeVoyageur(){
     listeVoyageurs.premier = NULL;
 }
 
-//TODO ajouter au début??? wtf à la fin
-//Ajoute un nouveau voyageur v à la fin de la liste chainée
+//Ajoute un nouveau voyageur v au début de la liste chainée
 void ajouteVoyageur(Voyageur * v){
 
     //Creation du nouveau voyageur
     VoyageurListeVoyageur * nouveau = (VoyageurListeVoyageur *)malloc(sizeof(VoyageurListeVoyageur));
     nouveau->voyageur = v;
-    nouveau->suivant = NULL;
-
-    if(listeVoyageurs.premier==NULL){   
-        listeVoyageurs.premier = nouveau;       
-    }
-    else{
-       /* VoyageurListeVoyageur * premier = listeVoyageurs.premier;
-        VoyageurListeVoyageur * deuxieme = premier->suivant;
-        premier->suivant = nouveau;
-        nouveau->suivant = deuxieme;*/
-        
-        VoyageurListeVoyageur * actuel = listeVoyageurs.premier;
-        
-        //on se place sur le dernier maillon de la chaine
-        while(actuel->suivant != NULL){
-            actuel = actuel->suivant;
-        }
-        //creation du maillon suivant
-        actuel->suivant = nouveau;
-    }
+    
+    nouveau->suivant = listeVoyageurs.premier;
+    listeVoyageurs.premier = nouveau;
+ 
 }
 
 //supprime un voyageur d'id idVoyageur de la liste chainée
@@ -44,15 +27,15 @@ void supprimeVoyageur(int idVoyageur){
 
     VoyageurListeVoyageur * actuel = listeVoyageurs.premier;
     VoyageurListeVoyageur * aSupprimmer = NULL;
-    bool trouver = false; //si on a trouver le bon voyageur
+    bool trouver = false;
 
     //On gere separement le cas ou le voyageur à supprimer est le premier de la liste
     if(actuel->voyageur->idVoyageur == idVoyageur){
         trouver = true;
-
         aSupprimmer = actuel;
         actuel = aSupprimmer->suivant;
     }
+
 
     while(actuel->suivant != NULL && !trouver){
 
@@ -61,10 +44,10 @@ void supprimeVoyageur(int idVoyageur){
             
             aSupprimmer = actuel->suivant;
             actuel->suivant = aSupprimmer->suivant;//on recupere le maillon suivant celui à supprimer pour garder la suite de la liste
-            
-            
         }
-        actuel = actuel->suivant;
+        else{//clause else car dans le cas où on supprime le dernier maillon actuel = NULL
+            actuel = actuel->suivant;
+        }   
     }
 
     if(trouver){
@@ -85,11 +68,8 @@ Voyageur * getVoyageur(int idVoyageur){
             v = actuel->voyageur;
             trouver = 1;
         }
-        else{
-            actuel = actuel->suivant;
-            if(actuel==NULL){//c'est quoi ça?
-            }
-        }
+
+        actuel = actuel->suivant;
     }
     return v;
 }
