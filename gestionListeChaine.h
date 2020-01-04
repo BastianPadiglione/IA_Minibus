@@ -14,7 +14,7 @@ struct VoyageurListeVoyageur{
     VoyageurListeVoyageur * suivant;
 };
 
-typedef struct{
+typedef struct{ 
     VoyageurListeVoyageur * premier;
 }ListeVoyageurs;
 

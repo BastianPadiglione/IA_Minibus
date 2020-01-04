@@ -65,15 +65,14 @@ int nbVoyageursDescendus;
 int nbVoyageursMontes;
 int nbVoyageursActuel;
 int tailleListeVoyageur;
+bool stationApparu;
 Joueur listeJoueurs[NB_JOUEURS_MAX];
 Station listeStations[NB_STATION_MAX];
 Bus listeBus[NB_JOUEURS_MAX * NB_BUS_MAX_JOUEUR];
 
 
 void joue();
-
-
-
+Station getStation(int idStation);
 
 
 //A DEFINIR

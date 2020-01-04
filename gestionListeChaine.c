@@ -40,12 +40,12 @@ void supprimeVoyageur(int idVoyageur){
     while(actuel->suivant != NULL && !trouver){
 
         if(actuel->suivant->voyageur->idVoyageur == idVoyageur){
-            trouver = 1;
+            trouver = true;
             
             aSupprimmer = actuel->suivant;
             actuel->suivant = aSupprimmer->suivant;//on recupere le maillon suivant celui à supprimer pour garder la suite de la liste
         }
-        else{//clause else car dans le cas où on supprime le dernier maillon actuel = NULL
+        else{//clause else car dans le cas où on supprime le dernier maillon: actuel == NULL
             actuel = actuel->suivant;
         }   
     }

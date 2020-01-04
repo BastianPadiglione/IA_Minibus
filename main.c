@@ -9,12 +9,13 @@ int main()
     initialisePartie();
    
     do{
-       // fprintf(stderr,"Tour : %d\n",tour);
+       
         initialiseTour();
         
         joue();
         fflush(stderr);
         fflush(stdout);
+        fflush(stdin);
         tour++;
     }while (listeJoueurs[monIdJoueur].etat == 0);
     
@@ -26,11 +27,16 @@ int main()
 ** joue
 **************************/
 
-
+void ordonneStations();
+Station stationLaPlusProche(Station * station, int indice);
+bool estPresent(Station * stations, Station stationCherchee, int taille);
+int distance(Station s1, Station s2);
+int idStationSuivante(int idSationActuelle);
 
 int getNbVoyageurBus(int idBus);
 void acheteAmeliorationSP(char * commande);
-
+void acheteAmeliorationCT(char * commande);
+void acheteAmeliorationSB(char * commande);
 
 void joue(){
     
@@ -39,12 +45,15 @@ void joue(){
 
     if(peutAcheterBus(monIdJoueur)){
         acheteBus(commandes);
+        listeJoueurs[monIdJoueur].argent -= PRIX_BUS;
     }
 
     if(peutAcheterAmeliorationSP(monIdJoueur)){
         acheteAmeliorationSP(commandes);
+        listeJoueurs[monIdJoueur].argent -= PRIX_AUGM_VITESSE_BUS;
     }
 
+    
     ajusteDestinationBus(commandes);
 
     strcat(commandes, "PASS\n");
@@ -65,8 +74,6 @@ int getNbBusJoueur(int idJoueur){
             nbBusJoueur++;
         }
     }
-    //fprintf(stderr, "J %d nbBus = %d\n",idJoueur, nbBusJoueur);
-
     return nbBusJoueur; 
 }
 
@@ -102,7 +109,6 @@ bool estVide(int idStation){
     VoyageurListeVoyageur * actuel = listeVoyageurs.premier;
     bool estVide = true;
 
-    //Mettre l'idBus d'un voygeur à -1 ou verifier que ça le soit par default au début
     while(actuel != NULL && estVide){
         if(actuel->voyageur->idBus == -1 
         && actuel->voyageur->idStationDepart == idStation){
@@ -158,21 +164,25 @@ void acheteBus(char * commandes){
 
 //TOFIX parfois le bus reste bloquer à la meme station
 void ajusteDestinationBus(char * commandes){
+
     int * mesIdBus = getMesIdBus();
     Bus bus;
     char * commandeDest = (char*)malloc(32*sizeof(char));
+
+    if(stationApparu){
+       ordonneStations();
+    }
 
     for(int i = 0; i < getMonNbBus(); i++){
 
         bus = listeBus[mesIdBus[i]];
     
         if(bus.arrete){
-            
             if((estVide(bus.stationDeDirection)                                     //si le bus ne peut pas prendre de voyageur (station vide ou bus plein)
                 || getNbVoyageurBus(bus.idBus) == bus.nbVoiture * NB_VOYAGEUR_MAX_VOITURE)  //ET que personne ne veut descendre
                 && !voyageurVeulentDescendre(bus.idBus, bus.stationDeDirection)){
-               
-                sprintf(commandeDest, "DESTINATION %d %d ; ", bus.idBus, (bus.stationDeDirection+1)%nbStations);
+
+                sprintf(commandeDest, "DESTINATION %d %d ; ", bus.idBus, idStationSuivante(bus.stationDeDirection) );
                 strcat(commandes,commandeDest);
             }
         }
@@ -183,4 +193,92 @@ void ajusteDestinationBus(char * commandes){
 
 void acheteAmeliorationSP(char * commande){
     strcat(commande, "UPDATESP ; ");
+}
+
+void acheteAmeliorationCT(char * commande){
+    strcat(commande, "UPDATECT ; ");
+}
+
+void acheteAmeliorationSB(char * commande){
+    fprintf(stderr,"achete SB");
+    strcat(commande, "UPDATESB ; ");
+}
+
+void ordonneStations(){
+
+    Station stationsOrdonnees[NB_STATION_MAX];
+    stationsOrdonnees[0] = listeStations[0];
+
+    for(int i = 1; i < nbStations; i++){
+        stationsOrdonnees[i] = stationLaPlusProche(stationsOrdonnees, i - 1);
+    }
+     for(int i = 0; i<nbStations; i++){
+        listeStations[i] = stationsOrdonnees[i];
+    }
+}
+
+Station stationLaPlusProche(Station * stations, int indiceStationActelle){
+    int distancePlusCourte = __INT_MAX__;
+    Station stationProche = listeStations[0];
+
+    int dist;
+
+    for(int i = 0; i < nbStations; i++){
+        if(!estPresent(stations, listeStations[i], indiceStationActelle +1)){
+            dist = distance(stations[indiceStationActelle], listeStations[i]);
+
+            if(dist < distancePlusCourte){
+                distancePlusCourte = dist;
+                stationProche = listeStations[i];
+            }
+        }
+    }
+    return stationProche;
+}
+
+bool estPresent(Station * stations, Station stationCherchee, int taille){
+
+    for(int i = 0; i < taille; i++){
+        if(stations[i].idStation == stationCherchee.idStation){
+            return true;
+        }
+    }
+    return false;
+}
+
+int distance(Station s1, Station s2){
+    int dist = 0;
+    int diffX = abs(s1.x - s2.x);
+    int diffY = abs(s1.y - s2.y);
+
+    //se deplacer en diagonale vaut pour 1 déplacement
+    while(diffX > 0 && diffY > 0){
+        dist++;
+        diffX--;
+        diffY--;
+    }
+    //somme des deplacement diagonaux et verticaux ou horizontaux
+    return dist + diffX + diffY;
+}
+
+int idStationSuivante(int idStationActuelle){
+    int positionStationActuelle;
+
+    for (int i = 0; i< nbStations; i++){
+        if(listeStations[i].idStation == idStationActuelle){
+            positionStationActuelle = i;
+        }
+    }
+    int positionStationSuivante = (positionStationActuelle + 1) % nbStations;
+
+    return listeStations[positionStationSuivante].idStation;
+}
+
+Station getStation(int idStation){
+    for(int i = 0; i < nbStations; i++){
+        if(listeStations[i].idStation == idStation){
+            return listeStations[i];
+        }
+    }
+    return listeStations[0];
 }
