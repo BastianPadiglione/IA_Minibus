@@ -1,9 +1,11 @@
 EXEC=IA
-CFLAGS=-Wall -Wextra -std=c99
+CFLAGS=-Wall -Wextra -std=c99 -lm
 LDFLAGS=
 
 
 all:: $(EXEC) clean
+
+
 
 IA: main.o recuperationDeDonnees.o gestionListeChaine.o verifications.o 
 	gcc -o ../Minibus/ligueIA/IA main.o recuperationDeDonnees.o gestionListeChaine.o verifications.o $(LDFLAGS)
@@ -19,6 +21,9 @@ gestionListeChaine.o: gestionListeChaine.c gestionListeChaine.h
 
 verifications.o: verifications.c verifications.h
 	gcc -o verifications.o -c verifications.c $(CFLAGS)
+
+IAMAIN: main.c
+	gcc -o ../Minibus/ligueIA/IA main.c $(CFLAGS)
 
 clean::
 	rm -rf *.o
